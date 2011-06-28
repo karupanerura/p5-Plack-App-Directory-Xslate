@@ -1,16 +1,33 @@
 NAME
-    Plack::App::Directory::Xslate -
+    Plack::App::Directory::Xslate - Serve static files and Text::Xslate
+    template files from document root with directory index
 
 SYNOPSIS
-      use Plack::App::Directory::Xslate;
+    # app.psgi use Plack::App::Directory::Xslate; my $app =
+    Plack::App::Directory::Xslate->new({ root => "/path/to/htdocs",
+    xslate_opt => +{ # Text::Xslate->new() syntax => 'TTerse', },
+    xslate_path => qr{\.tt$}, })->to_app;
 
 DESCRIPTION
-    Plack::App::Directory::Xslate is
+    This is a static files and Text::Xslate template files server PSGI
+    application with directory index a la Apache's mod_autoindex.
+
+CONFIGURATION
+    root
+        Document root directory. Defaults to the current directory.
+
+    xslate_opt
+        Text::Xslate constructor option.
+
+    xslate_path : Regexp or CodeRef
+        Allow Text::Xslate rendering path.
 
 AUTHOR
     Kenta Sato <karupa@cpan.org>
 
 SEE ALSO
+    Plack::App::Directory Plack::App::File Plack::App::Xslate
+
 LICENSE
     This library is free software; you can redistribute it and/or modify it
     under the same terms as Perl itself.
