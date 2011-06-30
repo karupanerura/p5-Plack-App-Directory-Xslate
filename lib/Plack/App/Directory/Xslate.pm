@@ -1,7 +1,7 @@
 package Plack::App::Directory::Xslate;
 use strict;
 use warnings;
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 use parent qw(Plack::App::Directory);
 use Text::Xslate;
@@ -12,8 +12,7 @@ sub new{
 	my $class = shift;
 	my $self  = $class->SUPER::new(@_);
 
-	$self->xslate_opt->{suffix} = '.html'; 
-	$self->xslate_opt->{path}   = $self->root;
+	$self->xslate_opt->{path} = $self->root;
 	$self->{xslate} = Text::Xslate->new($self->xslate_opt);
 	$self->{encoder} = find_encoding('utf-8');
 

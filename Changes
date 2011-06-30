@@ -2,3 +2,5 @@ Revision history for Perl extension Plack::App::Directory::Xslate
 
 0.01    Tue Jun 28 15:14:04 2011
         - original version
+0.02    2011-06-30 22:17:00
+        - fix: no suffix override
