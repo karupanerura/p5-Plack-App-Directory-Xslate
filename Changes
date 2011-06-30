@@ -4,3 +4,6 @@ Revision history for Perl extension Plack::App::Directory::Xslate
         - original version
 0.02    2011-06-30 22:17:00
         - fix: no suffix override
+0.03    2011-06-30 23:23:00
+        - fix: add META.yml
+        - fix: add requires in Makefile.PL
