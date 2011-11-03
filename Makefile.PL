@@ -11,6 +11,7 @@ requires 'Text::Xslate';
 requires 'Plack::App::Directory';
 requires 'Plack::Util::Accessor';
 requires 'Plack::Util';
+requires 'Plack';
 
 tests 't/*.t';
 author_tests 'xt';

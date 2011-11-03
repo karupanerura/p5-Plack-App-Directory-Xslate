@@ -13,3 +13,6 @@ Revision history for Perl extension Plack::App::Directory::Xslate
         - add basic test
 0.05    2011-09-11 16:22:00
         - fix dependency
+0.06    2011-11-04 08:30:00
+        - match the specification change of Plack::App::File.(SCRIPT_NAME to plack.file.SCRIPT_NAME)
+        - fixed bugging logic.

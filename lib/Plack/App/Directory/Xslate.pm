@@ -1,16 +1,20 @@
 package Plack::App::Directory::Xslate;
 use strict;
 use warnings;
-our $VERSION = '0.05';
+
+our $VERSION = '0.06';
 
 use parent qw(Plack::App::Directory);
-use Text::Xslate;
-use Plack ();
-use Plack::Util::Accessor qw(xslate_opt xslate_path xslate_param);
-use Encode;
-use Plack::Util;
 
-sub new{
+use Text::Xslate;
+use Encode ();
+
+use Plack ();
+use Plack::App::File ();
+use Plack::Util ();
+use Plack::Util::Accessor qw(xslate_opt xslate_path xslate_param);
+
+sub new {
 	my $class = shift;
 	my $self  = $class->SUPER::new(@_);
 
