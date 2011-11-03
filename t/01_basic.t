@@ -26,13 +26,9 @@ subtest 'Plack::Test' => sub {
             my $req = HTTP::Request->new(GET => 'http://localhost/test.txt');
             my $res = $cb->($req);
             is $res->content, 'Test <: $hoge :>', 'nomarl file';
-        };
-    test_psgi
-        app => $app,
-        client => sub {
-            my $cb = shift;
-            my $req = HTTP::Request->new(GET => 'http://localhost/test.tx');
-            my $res = $cb->($req);
+
+            $req = HTTP::Request->new(GET => 'http://localhost/test.tx');
+            $res = $cb->($req);
             is $res->content, 'Test fuga', 'template file';
         };
 };

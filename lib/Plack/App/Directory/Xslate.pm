@@ -5,6 +5,7 @@ our $VERSION = '0.05';
 
 use parent qw(Plack::App::Directory);
 use Text::Xslate;
+use Plack ();
 use Plack::Util::Accessor qw(xslate_opt xslate_path xslate_param);
 use Encode;
 use Plack::Util;
@@ -28,23 +29,24 @@ sub new{
 	*Plack::App::File::serve_path = sub{
         my($self, $env) = @_;
 
-		my $match = 0;
-
 		my $path_match = $self->xslate_path;
+        my $tmpl;
 		if ($path_match) {
-			$match = 1;
-			for my $path ($env->{SCRIPT_NAME}){
-				unless(('CODE' eq ref($path_match)) ? $path_match->($path) : $path =~ $path_match){
-					$match = 0;
+            my @script_name = ($Plack::VERSION >= 0.9935) ?
+                ($env->{'plack.file.SCRIPT_NAME'}):
+                ($env->{SCRIPT_NAME});
+			for my $path (@script_name) {
+                if (('CODE' eq ref($path_match)) ? $path_match->($path) : $path =~ $path_match) {
+                    $tmpl = $path;
 					last;
 				}
 			}
 		}
 
-		return $match ?
+		return $tmpl ?
 			do {
                 my $content = $self->{encoder}->encode(
-                    $self->{xslate}->render($env->{SCRIPT_NAME}, $self->xslate_param)
+                    $self->{xslate}->render($tmpl, $self->xslate_param)
                 );
                 [
                  200,
