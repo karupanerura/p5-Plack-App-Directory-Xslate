@@ -8,3 +8,10 @@ META.yml
 nytprof.out
 MANIFEST.bak
 *.sw[po]
+/Plack-App-Directory-Xslate-*
+/.build
+/_build_params
+/Build
+!Build/
+!META.json
+!LICENSE
