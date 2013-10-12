@@ -15,3 +15,6 @@ MANIFEST.bak
 !Build/
 !META.json
 !LICENSE
+_build
+MYMETA.json
+MYMETA.yml
