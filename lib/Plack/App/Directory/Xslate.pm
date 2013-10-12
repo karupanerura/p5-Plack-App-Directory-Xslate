@@ -8,6 +8,7 @@ use parent qw(Plack::App::Directory);
 
 use Text::Xslate;
 use Encode ();
+use File::Spec;
 
 use Plack ();
 use Plack::App::File ();
@@ -15,54 +16,56 @@ use Plack::Util ();
 use Plack::Util::Accessor qw(xslate_opt xslate_path xslate_param);
 
 sub new {
-	my $class = shift;
-	my $self  = $class->SUPER::new(@_);
+    my $class = shift;
+    my $self  = $class->SUPER::new(@_);
 
-	$self->xslate_opt->{path} = $self->root;
-	$self->{xslate}  = Text::Xslate->new($self->xslate_opt);
-	$self->{encoder} = Encode::find_encoding('utf-8');
+    $self->xslate_opt->{path} = $self->root;
+    $self->{xslate}           = Text::Xslate->new($self->xslate_opt);
+    $self->{encoder}          = Encode::find_encoding('utf-8');
     $self->xslate_param(+{}) unless $self->xslate_param;
 
-	return $self;
+    $self->xslate_path(sub {}) unless $self->xslate_path;
+    if (ref $self->xslate_path eq 'Regexp') {
+        my $re = $self->xslate_path;
+        $self->xslate_path(sub { $_ =~ $re });
+    }
+
+    return $self;
 }
 
-{
-	no strict 'refs';
-	no warnings 'redefine';
-	my $orig = Plack::App::File->can('serve_path');
-	*Plack::App::File::serve_path = sub{
-        my($self, $env) = @_;
+sub serve_path {
+    my ($self, $env, $path, $fullpath) = @_;
 
-		my $path_match = $self->xslate_path;
-        my $tmpl;
-		if ($path_match) {
-            my @script_name = ($Plack::VERSION >= 0.9935) ?
-                ($env->{'plack.file.SCRIPT_NAME'}):
-                ($env->{SCRIPT_NAME});
-			for my $path (@script_name) {
-                if (('CODE' eq ref($path_match)) ? $path_match->($path) : $path =~ $path_match) {
-                    $tmpl = $path;
-					last;
-				}
-			}
-		}
+    if (-f $path && $self->is_xslate_path($path)) {
+        return $self->serve_xslate($env, $path, $fullpath);
+    }
+    else {
+        return $self->SUPER::serve_path($env, $path, $fullpath);
+    }
+}
 
-		return $tmpl ?
-			do {
-                my $content = $self->{encoder}->encode(
-                    $self->{xslate}->render($tmpl, $self->xslate_param)
-                );
-                [
-                 200,
-                 [
-                  'Content-Type'   => 'text/html',
-                  'Content-Length' => Plack::Util::content_length($content),
-                 ],
-                 [$content]
-                ]
-            }:
-			$orig->(@_);
-	}
+sub is_xslate_path {
+    my ($self, $path) = @_;
+
+    local $_ = $path;
+    return $self->xslate_path->($path);
+}
+
+sub serve_xslate {
+    my ($self, $env, $path, $fullpath) = @_;
+
+    my $tmpl_path = File::Spec->abs2rel($path, $self->root);
+    my $content   = $self->{encoder}->encode(
+        $self->{xslate}->render($tmpl_path, $self->xslate_param)
+    );
+    return [
+        200,
+        [
+            'Content-Type'   => 'text/html',
+            'Content-Length' => Plack::Util::content_length($content),
+        ],
+        [$content]
+    ];
 }
 
 1;
