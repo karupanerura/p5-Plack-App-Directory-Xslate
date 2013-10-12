@@ -2,7 +2,7 @@ package Plack::App::Directory::Xslate;
 use strict;
 use warnings;
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 use parent qw(Plack::App::Directory);
 
